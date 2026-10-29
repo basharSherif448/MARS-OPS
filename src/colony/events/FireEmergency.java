@@ -11,6 +11,7 @@ public class FireEmergency extends Emergency {
         super(id, severity, state, affectedFacility, marsColony);
         this.affectedFacility = affectedFacility;
     }
+    
     @Override
     public boolean respond() {
         if ( super.getState() != EmergencyState.ACTIVE ||  affectedFacility == null ) {
@@ -31,7 +32,8 @@ public class FireEmergency extends Emergency {
         consumeFirefightingResources();
         boolean firefightingSuccess = executeFirefighting(requiredResponders);
 
-        // 10 & 11. تقييم العملية وتطبيق الآثار
+
+
         if (firefightingSuccess) {
             applyFireConsequences(true);
             this.resolve();
@@ -48,8 +50,7 @@ public class FireEmergency extends Emergency {
             damageSomeEquipment(2);
             increaseOxygenConsumption(10.0);
         } else {
-            // آثار فشل الإطفاء (كارثية):
-            // المعمل يخرج عن الخدمة تماماً، كل المعدات تتلف، واستهلاك الأكسجين يرتفع بشدة[cite: 19].
+
             affectedFacility.setOperational(false); // not availble
             damageAllEquipment();
             increaseOxygenConsumption(50.0);
@@ -58,7 +59,7 @@ public class FireEmergency extends Emergency {
     private List<Agent> getAvailableFireResponders() {
         List<Agent> team = new ArrayList<>();
         for (Agent agent : colony.getAgents()) {
-            if (agent.isAvailable() && agent.canHandle(this)) { //[cite: 1]
+            if (agent.isAvailable() && agent.canHandle(this)) {
                 team.add(agent);
             }
         }

@@ -1,15 +1,21 @@
 package colony.events;
 
+import agents.Agent;
+import agents.Human;
+import agents.Robot;
+
 import java.util.ArrayList;
 import java.util.List;
-
+// import colony.missions.MarsColony;
 
 public class EmergencyManager   {
     private List<Emergency> activeEmergencies;
     private Marscolony marscolony;
 
-    EmergencyManager() {
+    EmergencyManager(MarsColony marsColony) {
+
         this.activeEmergencies = new ArrayList<>();
+        this.marsColony = marsColony;
     }
     public void report(Emergency e ) {
         if( e == null ) {
@@ -33,7 +39,7 @@ public class EmergencyManager   {
             if( emergency.getState() == EmergencyState.RESOLVED ) {
                 activeEmergencies.remove(emergency);
             }
-            else if( emergency.getState() == EmergencyState.UNHANDLED ) {
+            else if( emergency.getState() == EmergencyState.UNRESOLVED ) {
                 continue;
             }
             else if( emergency.getState() == EmergencyState.ACTIVE ) {
@@ -44,42 +50,52 @@ public class EmergencyManager   {
 
 
     }
+    public boolean respond(Emergency e) {
 
-    public boolean respond( Emergency   e) {
-        if( e == null ) {
-            System.out.println("Emergency report: null" );
-            return false;
-
-        }
-        if ( e.getState() != EmergencyState.ACTIVE )
-        {
-            System.out.println("Emergency report: Emergency not active.");
+        if (e == null || !activeEmergencies.contains(e) || e.getState() != EmergencyState.ACTIVE) {
             return false;
         }
-        List<Agent> Agents = marscolony.getAgents();
+
+        List<Agent> allAgents = marsColony.getAgents();
         List<Agent> capableResponders = new ArrayList<>();
-        for (Agent agent : Agents) {
+
+
+        for (Agent agent : allAgents) {
             if (agent.isAvailable() && agent.canHandle(e)) {
                 capableResponders.add(agent);
             }
         }
-        int requiredRespondersCount = getRequiredResponders(e);
 
-        if (capableResponders.size() < requiredRespondersCount) {
-            e.markUnresolved("Insufficient count ");
+        if (!hasRequiredResponders(e, capableResponders)) {
+
+            e.markUnresolved("Insufficient available or capable responders.");
             return false;
         }
 
-
-        boolean isResponseSuccessful = e.respond();
-
-
-        if (isResponseSuccessful) {
-              return true;
-        } else {
-            e.markUnresolved("Response execution failed.");
-            return false;
+        for (Agent responder : capableResponders) {
+            responder.setLocation(e.getLocation());
         }
+
+
+        return e.respond();
+    }
+
+
+    private boolean hasRequiredResponders(Emergency e, List<Agent> responders) {
+        if (e instanceof OxygenLeakEmergency) {
+            boolean hasHuman = false;
+            boolean hasRobot = false;
+            for (Agent a : responders) {
+                if (a instanceof Human) hasHuman = true;
+                if (a instanceof Robot) hasRobot = true;
+            }
+            return hasHuman && hasRobot;
+        }
+        else if (e instanceof FireEmergency) {
+            return responders.size() >= 2;
+        }
+        return !responders.isEmpty();
+    }
 
     }
 

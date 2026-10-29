@@ -1,7 +1,8 @@
 package colony.events;
 import colony.facilities.Habitat;
-import colony.agents.Human;
-import colony.agents.Robot;
+import agents.Human;
+import agents.Robot;
+
 public class OxygenLeakEmergency extends Emergency {
     private  Habitat affectedHabitat ;
     private double oxygenLossAmount;
@@ -55,10 +56,9 @@ public class OxygenLeakEmergency extends Emergency {
 
         this.markUnresolved(reason);
     }
-    // --- الدوال المساعدة ---
 
     private Human getAvailableHumanResponder() {
-        for (Agent agent : this.marsColony.getAgents()) { // الاعتماد على الـ Colony[cite: 1]
+        for (Agent agent : this.marsColony.getAgents()) {
             if (agent instanceof Human && agent.isAvailable() && agent.canHandle(this)) {
                 return (Human) agent;
             }
@@ -77,7 +77,7 @@ public class OxygenLeakEmergency extends Emergency {
 
     private boolean hasEnoughRepairResources() {
         double availableParts = this.marsColony.getTotalResource("SpareParts");
-        return availableParts >= 2.0; // نفترض الإصلاح يستهلك قطعتين
+        return availableParts >= 2.0;
     }
 
     private void consumeRepairResources() {

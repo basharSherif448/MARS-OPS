@@ -1,10 +1,13 @@
 package colony.events;
 
+import colony.facilities.Location;
+//import colony.missions.MarsColony;
+
 public abstract class  Emergency {
     private String id ;
     private int severity ;
-    private EmergencyState state ;
-    private  Location  location ;
+    private EmergencyState state = EmergencyState.ACTIVE  ;
+    private Location location ;
     private String  unresolvedReason;
     protected MarsColony marsColony;
     Emergency(String id, int severity, EmergencyState state, Location location, MarsColony marsColony) {
