@@ -1,7 +1,6 @@
 package agents;
 
 
-import java.util.Arrays;
 
 public abstract class Human implements Agent {
     private String name;
@@ -13,38 +12,26 @@ public abstract class Human implements Agent {
     private boolean available;
 
     public Human(String name, String identificationNumber, String healthStatus, 
-                 Location currentLocation, String[] skills) {
-        
-       
-        if (name == null || name.isEmpty()) {
-            this.name = "Unknown Human";
-        } else {
-            this.name = name;
-        }
-
-      
-        if (identificationNumber == null || identificationNumber.isEmpty()) {
-            this.identificationNumber = "ID-UNASSIGNED";
-        } else {
-            this.identificationNumber = identificationNumber.trim();
-        }
-
+                 Location currentLocation, String[] skills)
+     {
+        this.name = name;
+        this.identificationNumber = identificationNumber;
         
         if (healthStatus == null || healthStatus.isEmpty()) {
             this.healthStatus = "HEALTHY";
         } else {
-            this.healthStatus = healthStatus;
+            this.healthStatus = healthStatus.toUpperCase();
         }
 
         this.currentLocation = currentLocation;
-      if (skills != null) {
+         if (skills != null) {
         this.skills = skills;      
     } else {
         this.skills = new String[0]; 
-    }
         this.fatigueLevel = 0.0;
         this.available = true;
     }
+}
 
     @Override
     public abstract boolean canPerform(Mission mission);
@@ -54,12 +41,9 @@ public abstract class Human implements Agent {
 
     @Override
     public boolean isAvailable() {
-        return this.available  && this.healthStatus!="INJURED"  && this.fatigueLevel < 100.0;
-    }
-
-    @Override
-    public void setAvailable(boolean available) {
-        this.available = available;
+        return this.available 
+                && !"INJURED".equalsIgnoreCase(this.healthStatus) 
+                && this.fatigueLevel < 100.0;
     }
 
     @Override
@@ -72,26 +56,31 @@ public abstract class Human implements Agent {
         this.currentLocation = location;
     }
 
-   public void increaseFatigue(double amount) {
-    if(amount>=0)
-         this.fatigueLevel += amount;
-}
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
 
-   
-    
-    public String getName() { return name; }
-    public String getIdentificationNumber() { return identificationNumber; }
-    
-    public String getHealthStatus() { return healthStatus; }
-    public void setHealthStatus(String healthStatus) { 
-        if (healthStatus != null && !healthStatus.isEmpty()) {
-                  this.healthStatus = healthStatus;
+    public void increaseFatigue(double amount) {
+        if (amount > 0.0) {
+            this.fatigueLevel = this.fatigueLevel + amount;
+            if (this.fatigueLevel > 100.0) {
+                this.fatigueLevel = 100.0;
+            }
         }
     }
-    
-    public double getFatigueLevel() { return fatigueLevel; }
-    public String[] getSkills() { 
-        return skills;
 
+    public String getName() { return name; }
+    public String getIdentificationNumber() { return identificationNumber; }
+    public String getHealthStatus() { return healthStatus; }
+    public void setHealthStatus(String healthStatus) {
+        if (healthStatus != null && !healthStatus.isEmpty()) {
+            this.healthStatus = healthStatus.toUpperCase();
+        }
+    }
+    public String[] getSkills() { return skills; }
+
+    public double getFatigueLevel() 
+    { 
+        return fatigueLevel;
      }
 }

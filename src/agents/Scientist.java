@@ -1,4 +1,4 @@
-package agents;
+package agents
 
 
 
@@ -14,27 +14,21 @@ public class Scientist extends Human {
         if (!isAvailable()) {
             return false;
         }
-
-        
         if (mission instanceof ResearchMission) {
             return true;
         }
-
-    
         if (mission instanceof ExplorationMission) {
-            for (String skill : getSkills()) {
-                if ("SURFACE_ANALYSIS".equalsIgnoreCase(skill)) {
+            for (String s : getSkills()) {
+                if ("SURFACE_ANALYSIS".equalsIgnoreCase(s)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
     @Override
     public boolean canHandle(Emergency emergency) {
-        // Scientists do not respond to physical/structural or medical emergencies
         return false;
     }
 

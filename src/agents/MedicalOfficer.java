@@ -1,6 +1,7 @@
 package agents;
 
 
+
 public class MedicalOfficer extends Human {
 
     public MedicalOfficer(String name, String identificationNumber, String healthStatus, 
@@ -13,7 +14,7 @@ public class MedicalOfficer extends Human {
         if (!isAvailable()) {
             return false;
         }
-
+        return (mission instanceof RescueMission);
     }
 
     @Override
@@ -21,13 +22,11 @@ public class MedicalOfficer extends Human {
         if (!isAvailable()) {
             return false;
         }
-
-        
         return (emergency instanceof MedicalEmergency);
     }
 
     public void treat(Human patient) {
-        if (patient != null)
+        if (patient != null) {
             patient.setHealthStatus("HEALTHY");
             increaseFatigue(10.0);
         }

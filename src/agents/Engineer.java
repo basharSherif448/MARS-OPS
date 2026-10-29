@@ -14,8 +14,6 @@ public class Engineer extends Human {
         if (!isAvailable()) {
             return false;
         }
-
-        
         return (mission instanceof RepairMission);
     }
 
@@ -24,8 +22,6 @@ public class Engineer extends Human {
         if (!isAvailable()) {
             return false;
         }
-
-        
         return (emergency instanceof OxygenLeakEmergency) || (emergency instanceof FireEmergency);
     }
 
@@ -36,9 +32,9 @@ public class Engineer extends Human {
         }
     }
 
-    public void repairEquipment(Equipment equipment) {
-        if (equipment != null) {
-            equipment.repair();
+    public void repairEquipment(Equipment eq) {
+        if (eq != null) {
+            eq.repair();
             increaseFatigue(10.0);
         }
     }
