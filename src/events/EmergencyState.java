@@ -1,6 +1,6 @@
 package colony.events;
 
-public enum EmergencyState {
+public enum EmergencyStatus {
     ACTIVE,
     RESOLVED,
     UNRESOLVED

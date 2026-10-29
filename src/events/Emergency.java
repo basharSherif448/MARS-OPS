@@ -1,16 +1,16 @@
 package colony.events;
 
 import facilities.Location;
-//import colony.missions.MarsColony;
+import missions.MarsColony;
 
 public abstract class  Emergency {
     private String id ;
     private int severity ;
-    private EmergencyState state = EmergencyState.ACTIVE  ;
+    private EmergencyStatus state = EmergencyStatus.ACTIVE  ;
     private Location location ;
     private String  unresolvedReason;
     protected MarsColony marsColony;
-    Emergency(String id, int severity, EmergencyState state, Location location, MarsColony marsColony) {
+    Emergency(String id, int severity, EmergencyStatus state, Location location, MarsColony marsColony) {
         this.id = id;
         this.severity = severity;
         this.state = state;
@@ -24,26 +24,27 @@ public abstract class  Emergency {
     public int getSeverity() {
         return severity;
     }
-    public EmergencyState getState() {
-        return state;
-    }
-    public  void updateState( EmergencyState state ) {
+
+    public  void updateState( EmergencyStatus state ) {
         this.state = state;
     }
 
-    public void setStatus( EmergencyState state ) {
+    public void setStatus( EmergencyStatus state ) {
         this.state = state;
+    }
+    public EmergencyStatus getState(  ) {
+        return state;
     }
     public void setUnresolvedReason( String unresolvedReason) {
        this.unresolvedReason = unresolvedReason;
     }
     public void resolve(){
-     if (this.getState() == EmergencyState.RESOLVED){
+     if (this.getState() == EmergencyStatus.RESOLVED){
          System.out.println("Emergency is already resolved");
      }
      else
          {
-          setStatus(EmergencyState.RESOLVED);
+          setStatus(EmergencyStatus.RESOLVED);
           setUnresolvedReason(null);
          }
     }
@@ -52,7 +53,7 @@ public abstract class  Emergency {
         if (reason == null || reason.trim().isEmpty()) {
             System.out.println("reason is invalid");
         } else {
-            setStatus(EmergencyState.RESOLVED);
+            setStatus(EmergencyStatus.UNRESOLVED);
             setUnresolvedReason(reason);
             System.out.println("marked unresolved for " + this.getId());
         }
