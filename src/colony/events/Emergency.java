@@ -31,7 +31,7 @@ public abstract class  Emergency {
         this.state = state;
     }
 
-    public void setstate( EmergencyState state ) {
+    public void setStatus( EmergencyState state ) {
         this.state = state;
     }
     public void setUnresolvedReason( String unresolvedReason) {
@@ -43,7 +43,7 @@ public abstract class  Emergency {
      }
      else
          {
-          setstate(EmergencyState.RESOLVED);
+          setStatus(EmergencyState.RESOLVED);
           setUnresolvedReason(null);
          }
     }
@@ -52,7 +52,7 @@ public abstract class  Emergency {
         if (reason == null || reason.trim().isEmpty()) {
             System.out.println("reason is invalid");
         } else {
-            setstate(EmergencyState.RESOLVED);
+            setStatus(EmergencyState.RESOLVED);
             setUnresolvedReason(reason);
             System.out.println("marked unresolved for " + this.getId());
         }

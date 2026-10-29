@@ -24,7 +24,6 @@ public class OxygenLeakEmergency extends Emergency {
         Human humanResponder = findAvailableHumanRepairer();
         Robot robotResponder = findAvailableRobotRepairer();
 
-        // 5. لو مش موجودين، نفذ خصم العقوبة، سجّل UNRESOLVED، وارجع false
         if (humanResponder == null || robotResponder == null) {
             failEmergency("Insufficient responders ");
             return false;

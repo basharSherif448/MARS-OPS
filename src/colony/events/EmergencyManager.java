@@ -19,22 +19,22 @@ public class EmergencyManager   {
     }
     public void report(Emergency e ) {
         if( e == null ) {
-            System.out.println("Emergency report: null" );
+            System.out.println("Emergency  is null" );
 
         }
         else if ( activeEmergencies.contains(e) )
         {
-            System.out.println("Emergency report: Emergency already active.");
+            System.out.println(" Emergency already active.");
         }
         else if ( e.getState() != EmergencyState.ACTIVE ){
-            System.out.println("Emergency report: Emergency not active.");
+            System.out.println(" Emergency not active.");
         }
         else {
             activeEmergencies.add(e);
         }
     }
     public void update(){
-        List<Emergency> EMERGENCYS =new ArrayList<>( activeEmergencies);
+        List<Emergency> EMERGENCYS =new ArrayList<>( activeEmergencies);// to avoid edit the main array
         for (Emergency emergency : EMERGENCYS) {
             if( emergency.getState() == EmergencyState.RESOLVED ) {
                 activeEmergencies.remove(emergency);
