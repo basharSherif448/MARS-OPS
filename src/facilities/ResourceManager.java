@@ -1,6 +1,5 @@
-package colony.facilities;
+package facilities;
 
-import colony.core.Result;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -62,5 +61,76 @@ public class ResourceManager {
             remaining -= f.getStore().removeUpTo(type, remaining);
         }
         return amount - remaining;
+    }
+
+    // --- UML Class Diagram Methods ---
+
+    public double total(String name) {
+        try {
+            ResourceType type = ResourceType.valueOf(name.toUpperCase());
+            return (double) getTotal(type);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return 0.0;
+        }
+    }
+
+    public boolean canConsume(String name, double amount) {
+        try {
+            ResourceType type = ResourceType.valueOf(name.toUpperCase());
+            return getTotal(type) >= (int) amount;
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    public boolean consumeAll(Map requirements) {
+        if (requirements == null) return false;
+        Map<ResourceType, Integer> request = new EnumMap<>(ResourceType.class);
+        for (Object key : requirements.keySet()) {
+            try {
+                ResourceType type;
+                if (key instanceof ResourceType) {
+                    type = (ResourceType) key;
+                } else {
+                    type = ResourceType.valueOf(key.toString().toUpperCase());
+                }
+                Number val = (Number) requirements.get(key);
+                request.put(type, val.intValue());
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return consume(request).success();
+    }
+
+    // --- Embedded Result Definition ---
+
+    public static class Result {
+        private final boolean success;
+        private final String message;
+
+        private Result(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public static Result ok() {
+            return new Result(true, "");
+        }
+
+        public static Result fail(String message) {
+            return new Result(false, message);
+        }
+
+        public boolean success() { return success; }
+        public boolean isSuccess() { return success; }
+        public boolean isFailure() { return !success; }
+        public String getMessage() { return message; }
+
+        @Override
+        public String toString() {
+            return success ? "OK" : "FAILED: " + message;
+        }
     }
 }

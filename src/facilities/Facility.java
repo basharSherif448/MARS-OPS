@@ -1,4 +1,4 @@
-package colony.facilities;
+package facilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +19,15 @@ public abstract class Facility implements Location, Repairable {
     public FacilityStatus getStatus() { return status; }
     public void setStatus(FacilityStatus status) { this.status = status; }
     public boolean isOperational() { return status == FacilityStatus.OPERATIONAL; }
+
+    public void setOperational(boolean operational) {
+        if (operational) {
+            this.status = FacilityStatus.OPERATIONAL;
+        } else {
+            this.status = FacilityStatus.UNAVAILABLE;
+        }
+    }
+
     public ResourceStore getStore() { return store; }
     public int getStock(ResourceType type) { return store.get(type); }
 

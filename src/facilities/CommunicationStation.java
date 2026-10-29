@@ -1,4 +1,4 @@
-package colony.facilities;
+package facilities;
 
 public class CommunicationStation extends Facility {
     public CommunicationStation(String name, int capacity) { super(name, capacity); }
