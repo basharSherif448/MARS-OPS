@@ -1,5 +1,5 @@
 package colony.events;
-import colony.facilities.Habitat;
+import facilities.Habitat;
 import agents.Human;
 import agents.Robot;
 

@@ -1,6 +1,6 @@
 package colony.events;
 import colony.agents.Agent;
-import colony.facilities.Facility;
+import facilities.Facility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ public class FireEmergency extends Emergency {
         super(id, severity, state, affectedFacility, marsColony);
         this.affectedFacility = affectedFacility;
     }
-    
+
     @Override
     public boolean respond() {
         if ( super.getState() != EmergencyState.ACTIVE ||  affectedFacility == null ) {

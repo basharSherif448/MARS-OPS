@@ -1,6 +1,6 @@
 package colony.events;
 
-import colony.facilities.Location;
+import facilities.Location;
 //import colony.missions.MarsColony;
 
 public abstract class  Emergency {
