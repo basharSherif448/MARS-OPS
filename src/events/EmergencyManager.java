@@ -1,12 +1,10 @@
-package colony.events;
+package events;
 
 import agents.Agent;
-import agents.Human;
-import agents.Robot;
+import colony.missions.MarsColony;
 
 import java.util.ArrayList;
-import java.util.List;
-// import colony.missions.MarsColony;
+import java.util.List
 
 public class EmergencyManager   {
     private List<Emergency> activeEmergencies;
@@ -31,7 +29,7 @@ public class EmergencyManager   {
         {
             System.out.println(" Emergency already active.");
         }
-        else if ( e.getState() != EmergencyStatus.ACTIVE ){
+        else if ( e.getStatus() != EmergencyStatus.ACTIVE ){
             System.out.println(" Emergency not active.");
         }
         else {
@@ -41,13 +39,13 @@ public class EmergencyManager   {
     public void update(){
         List<Emergency> EMERGENCYS =new ArrayList<>( activeEmergencies);// to avoid edit the main array
         for (Emergency emergency : EMERGENCYS) {
-            if( emergency.getState() == EmergencyStatus.RESOLVED ) {
+            if( emergency.getStatus() == EmergencyStatus.RESOLVED ) {
                 activeEmergencies.remove(emergency);
             }
-            else if( emergency.getState() == EmergencyStatus.UNRESOLVED ) {
+            else if( emergency.getStatus() == EmergencyStatus.UNRESOLVED ) {
                 continue;
             }
-            else if( emergency.getState() == EmergencyStatus.ACTIVE ) {
+            else if( emergency.getStatus() == EmergencyStatus.ACTIVE ) {
                 continue;
             }
         }
@@ -57,7 +55,7 @@ public class EmergencyManager   {
     }
     public boolean respond(Emergency e) {
 
-        if (e == null || !activeEmergencies.contains(e) || e.getState() != EmergencyStatus.ACTIVE) {
+        if (e == null || !activeEmergencies.contains(e) || e.getStatus() != EmergencyStatus.ACTIVE) {
             return false;
         }
 
@@ -65,5 +63,7 @@ public class EmergencyManager   {
     }
 
     }
+
+
 
 }

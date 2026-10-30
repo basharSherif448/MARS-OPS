@@ -1,12 +1,14 @@
-package colony.events;
-
+package events;
 import agents.Agent;
-import agents.ExplorationRover;
+import colony.agents.ExplorationRover;
+import facilities.ResourceType;
+import colony.missions.MarsColony;
 
+import java.util.EnumMap;
+import java.util.Map;
 
 public class RoverBreakdownEmergency extends Emergency {
     private ExplorationRover rover;
-
 
     public RoverBreakdownEmergency(String id, int severity, EmergencyStatus status, ExplorationRover rover, MarsColony marsColony) {
         super(id, severity, status, rover.getLocation(), marsColony);
@@ -35,30 +37,31 @@ public class RoverBreakdownEmergency extends Emergency {
         }
 
         if (repairer == null) {
-            this.markUnresolved("No available repair units for broken rover"); // تسجيل الفشل والسبب
+            this.markUnresolved("No available repair units for broken rover");
             return false;
         }
 
         repairer.setLocation(rover.getLocation());
 
         if (!hasEnoughRepairParts()) {
-            this.markUnresolved("Insufficient spare parts to repair rover"); // فشل لعدم توفر قطع الغيار
+            this.markUnresolved("Insufficient spare parts to repair rover");
             return false;
         }
 
         consumeRepairParts();
 
         rover.setAvailable(true);
-
         this.resolve();
         return true;
     }
 
     private boolean hasEnoughRepairParts() {
-        return this.marsColony.getTotalResource("SpareParts") >= 2.0; // فحص مخزون قطع الغيار
+        return this.marsColony.getResourceManager().getTotal(ResourceType.SPARE_PARTS) >= 2;
     }
 
     private void consumeRepairParts() {
-        this.marsColony.getResourceManager().consume("SpareParts", 2.0); // خصم قطعتين غيار
+        Map<ResourceType, Integer> req = new EnumMap<>(ResourceType.class);
+        req.put(ResourceType.SPARE_PARTS, 2);
+        this.marsColony.getResourceManager().consume(req);
     }
 }

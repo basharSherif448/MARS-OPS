@@ -1,30 +1,31 @@
-package colony.events;
+package events;
+
 import agents.Agent;
 import facilities.Facility;
+import facilities.ResourceType;
+import colony.missions.MarsColony;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
+
 public class FireEmergency extends Emergency {
-
     private Facility affectedFacility;
-    public FireEmergency(String id, int severity, EmergencyStatus state, Facility affectedFacility, MarsColony marsColony) {
-        super(id, severity, state, affectedFacility, marsColony);
+
+    public FireEmergency(String id, int severity, EmergencyStatus status, Facility affectedFacility, MarsColony marsColony) {
+        super(id, severity, status, affectedFacility, marsColony);
         this.affectedFacility = affectedFacility;
     }
 
     public Facility getAffectedFacility() {
         return affectedFacility;
     }
-    
 
-    @Override
     @Override
     public boolean respond() {
         if (super.getStatus() != EmergencyStatus.ACTIVE || affectedFacility == null) {
             return false;
         }
 
-    
         affectedFacility.setOperational(false);
 
         Agent responder1 = null;
@@ -42,16 +43,15 @@ public class FireEmergency extends Emergency {
         }
 
         if (responder1 == null || responder2 == null) {
-            this.markUnresolved("Insufficient responders for fire emergency"); // وسم الطوارئ كـ UNRESOLVED
+            this.markUnresolved("Insufficient responders for fire emergency");
             return false;
         }
 
         responder1.setLocation(affectedFacility);
         responder2.setLocation(affectedFacility);
 
-        // فحص توافر الموارد اللازمة لإخماد الحريق عبر ResourceManager (Section 5)
         if (!hasEnoughFireSupplies()) {
-            this.markUnresolved("Insufficient fire suppression resources"); // فشل لعدم توفر الموارد بدون استهلاك
+            this.markUnresolved("Insufficient fire suppression resources");
             return false;
         }
 
@@ -63,10 +63,12 @@ public class FireEmergency extends Emergency {
     }
 
     private boolean hasEnoughFireSupplies() {
-        return this.marsColony.getTotalResource("Water") >= 10.0;
+        return this.marsColony.getResourceManager().getTotal(ResourceType.WATER) >= 10;
     }
 
     private void consumeFireSupplies() {
-        this.marsColony.getResourceManager().consume("Water", 10.0);
+        Map<ResourceType, Integer> req = new EnumMap<>(ResourceType.class);
+        req.put(ResourceType.WATER, 10);
+        this.marsColony.getResourceManager().consume(req);
     }
 }

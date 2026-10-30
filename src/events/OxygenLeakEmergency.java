@@ -1,30 +1,36 @@
-package colony.events;
+package events;
+
 import agents.Agent;
 import facilities.Habitat;
-import agents.Human;
-import agents.Robot;
+import facilities.ResourceType;
+import colony.missions.MarsColony;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public class OxygenLeakEmergency extends Emergency {
-    private  Habitat affectedHabitat ;
-    private int oxygenLossAmount;
+    private Habitat affectedHabitat;
+    private double oxygenLossAmount;
     private boolean initialOxygenLossApplied;
-    public OxygenLeakEmergency(String id, int severity, EmergencyStatus state, Habitat affectedHabitat, int oxygenLossAmount, MarsColony marsColony) {
-        super(id, severity, state, affectedHabitat, marsColony); // location هو affectedHabitat
+
+    public OxygenLeakEmergency(String id, int severity, EmergencyStatus status, Habitat affectedHabitat, double oxygenLossAmount, MarsColony marsColony) {
+        super(id, severity, status, affectedHabitat, marsColony);
         this.affectedHabitat = affectedHabitat;
         this.oxygenLossAmount = oxygenLossAmount;
         this.initialOxygenLossApplied = false;
     }
+
     @Override
     public boolean respond() {
         if (super.getStatus() != EmergencyStatus.ACTIVE || affectedHabitat == null) {
             return false;
         }
 
-        // خصم الأوكسجين المبدئي
         if (!initialOxygenLossApplied) {
-            affectedHabitat.loseOxygen(oxygenLossAmount);
+            affectedHabitat.reduceOxygen(oxygenLossAmount);
             initialOxygenLossApplied = true;
         }
+
         Agent responder1 = null;
         Agent responder2 = null;
 
@@ -44,49 +50,35 @@ public class OxygenLeakEmergency extends Emergency {
             return false;
         }
 
-        responder1.setLocation(affectedHabitat.);
+        responder1.setLocation(affectedHabitat);
         responder2.setLocation(affectedHabitat);
-
 
         if (!hasEnoughRepairResources()) {
             failEmergency("Insufficient repair resources");
             return false;
         }
 
-
         consumeRepairResources();
 
-        boolean repairSuccess = executeRepair(responder1, responder2);
-        if (repairSuccess) {
-            this.resolve();
-            return true;
-        } else {
-            failEmergency("Repair execution failed during operation.");
-            return false;
-        }
+        this.resolve();
+        return true;
     }
 
     private void failEmergency(String reason) {
-        affectedHabitat.loseOxygen(oxygenLossAmount);
+        affectedHabitat.reduceOxygen(oxygenLossAmount);
         this.markUnresolved(reason);
     }
 
     private boolean hasEnoughRepairResources() {
-        double availableParts = this.marsColony.getTotalResource("SpareParts");
-        return availableParts >= 2.0;
+        return this.marsColony.getResourceManager().getTotal(ResourceType.SPARE_PARTS) >= 2;
     }
 
     private void consumeRepairResources() {
-        this.marsColony.getResourceManager().consume("SpareParts", 2.0);
-    }
-
-    private boolean executeRepair(Agent a1, Agent a2) {
-        return true;
+        Map<ResourceType, Integer> req = new EnumMap<>(ResourceType.class);
+        req.put(ResourceType.SPARE_PARTS, 2);
+        this.marsColony.getResourceManager().consume(req);
     }
 }
-
-
-
 
 
 

@@ -1,4 +1,4 @@
-package colony.events;
+package events;
 
 public enum EmergencyStatus {
     ACTIVE,

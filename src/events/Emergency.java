@@ -1,4 +1,4 @@
-package colony.events;
+package events;
 
 import facilities.Location;
 import missions.MarsColony;
@@ -32,14 +32,14 @@ public abstract class  Emergency {
     public void setStatus( EmergencyStatus state ) {
         this.state = state;
     }
-    public EmergencyStatus getState(  ) {
+    public EmergencyStatus getStatus(  ) {
         return state;
     }
     public void setUnresolvedReason( String unresolvedReason) {
        this.unresolvedReason = unresolvedReason;
     }
     public void resolve(){
-     if (this.getState() == EmergencyStatus.RESOLVED){
+     if (this.getStatus() == EmergencyStatus.RESOLVED){
          System.out.println("Emergency is already resolved");
      }
      else

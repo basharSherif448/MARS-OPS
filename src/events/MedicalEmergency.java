@@ -1,33 +1,32 @@
-package colony.events; // الباكيج الخاص بأحداث وطوارئ المستعمرة
+package events;
 
-import agents.Agent; // استيراد كلاس Agent
-import agents.Human; // استيراد كلاس Human للمريض
+import agents.Agent;
+import agents.Human;
+import facilities.ResourceType;
+import colony.missions.MarsColony;
 
-/**
- * كلاس يمثل حالة الطوارئ الطبية لرواد المستعمرة ويرث من Emergency[cite: 1]
- */
+import java.util.EnumMap;
+import java.util.Map;
+
 public class MedicalEmergency extends Emergency {
     private Human patient;
 
     public MedicalEmergency(String id, int severity, EmergencyStatus status, Human patient, MarsColony marsColony) {
-        super(id, severity, status, patient.getLocation(), marsColony); // موقع الطارئ هو موقع المريض الحالي
+        super(id, severity, status, patient.getLocation(), marsColony);
         this.patient = patient;
     }
 
-    // إرجاع مرجع المريض المتأثر
     public Human getPatient() {
         return patient;
     }
 
-    // تنفيذ الاستجابة لحالة الطوارئ الطبية (Section 9.5)
     @Override
     public boolean respond() {
-        // التحقق من أن حالة الطوارئ نشطة والمريض متواجد
         if (super.getStatus() != EmergencyStatus.ACTIVE || patient == null) {
             return false;
         }
 
-        Agent medicalOfficer = null; // الكادر الطبي المستجيب
+        Agent medicalOfficer = null;
 
         for (Agent agent : this.marsColony.getAgents()) {
             if (agent.isAvailable() && agent.canHandle(this)) {
@@ -37,30 +36,32 @@ public class MedicalEmergency extends Emergency {
         }
 
         if (medicalOfficer == null) {
-            this.markUnresolved("No available medical officer for patient"); // تسجيل عدم القدرة على العلاج
+            this.markUnresolved("No available medical officer for patient");
             return false;
         }
 
         medicalOfficer.setLocation(patient.getLocation());
 
         if (!hasEnoughMedicalSupplies()) {
-            this.markUnresolved("Insufficient medical supplies in colony"); // فشل لعدم توافر الأدوية
+            this.markUnresolved("Insufficient medical supplies in colony");
             return false;
         }
 
         consumeMedicalSupplies();
 
-        patient.setHealthStatus("Healthy");
+        patient.setHealthStatus("HEALTHY");
 
         this.resolve();
         return true;
     }
 
     private boolean hasEnoughMedicalSupplies() {
-        return this.marsColony.getTotalResource("MedicalSupplies") >= 1.0;
+        return this.marsColony.getResourceManager().getTotal(ResourceType.MEDICAL_SUPPLIES) >= 1;
     }
 
     private void consumeMedicalSupplies() {
-        this.marsColony.getResourceManager().consume("MedicalSupplies", 1.0);
+        Map<ResourceType, Integer> req = new EnumMap<>(ResourceType.class);
+        req.put(ResourceType.MEDICAL_SUPPLIES, 1);
+        this.marsColony.getResourceManager().consume(req);
     }
 }
