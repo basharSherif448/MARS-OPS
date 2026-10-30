@@ -1,12 +1,10 @@
-package events;
+package colony.events;
 
 import agents.Agent;
 import facilities.Facility;
-import facilities.ResourceType;
 import colony.missions.MarsColony;
-
-import java.util.EnumMap;
-import java.util.Map;
+import events.Emergency;
+import events.EmergencyStatus;
 
 public class FireEmergency extends Emergency {
     private Facility affectedFacility;
@@ -63,12 +61,12 @@ public class FireEmergency extends Emergency {
     }
 
     private boolean hasEnoughFireSupplies() {
-        return this.marsColony.getResourceManager().getTotal(ResourceType.WATER) >= 10;
+        return this.marsColony.getTotalResource("Water") >= 10.0;
     }
 
     private void consumeFireSupplies() {
-        Map<ResourceType, Integer> req = new EnumMap<>(ResourceType.class);
-        req.put(ResourceType.WATER, 10);
-        this.marsColony.getResourceManager().consume(req);
+        if (this.marsColony.getResourceManager() != null) {
+            this.marsColony.getResourceManager().canConsume("Water", 10.0);
+        }
     }
 }

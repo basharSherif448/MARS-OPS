@@ -1,8 +1,9 @@
-package events;
+package colony.events;
 
 import colony.missions.Mission;
 import colony.missions.ExplorationMission;
-
+import events.EnvironmentType;
+import events.EnvironmentalCondition;
 import java.util.ArrayList;
 import java.util.List;
 

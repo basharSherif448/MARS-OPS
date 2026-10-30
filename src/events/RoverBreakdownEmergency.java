@@ -1,11 +1,10 @@
-package events;
+package colony.events;
+
 import agents.Agent;
 import colony.agents.ExplorationRover;
-import facilities.ResourceType;
 import colony.missions.MarsColony;
-
-import java.util.EnumMap;
-import java.util.Map;
+import events.Emergency;
+import events.EmergencyStatus;
 
 public class RoverBreakdownEmergency extends Emergency {
     private ExplorationRover rover;
@@ -56,12 +55,12 @@ public class RoverBreakdownEmergency extends Emergency {
     }
 
     private boolean hasEnoughRepairParts() {
-        return this.marsColony.getResourceManager().getTotal(ResourceType.SPARE_PARTS) >= 2;
+        return this.marsColony.getTotalResource("SpareParts") >= 2.0;
     }
 
     private void consumeRepairParts() {
-        Map<ResourceType, Integer> req = new EnumMap<>(ResourceType.class);
-        req.put(ResourceType.SPARE_PARTS, 2);
-        this.marsColony.getResourceManager().consume(req);
+        if (this.marsColony.getResourceManager() != null) {
+            this.marsColony.getResourceManager().canConsume("SpareParts", 2.0);
+        }
     }
 }

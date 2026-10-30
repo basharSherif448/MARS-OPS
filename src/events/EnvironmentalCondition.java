@@ -1,6 +1,7 @@
-package events;
+package colony.events;
 
 import colony.missions.MarsColony;
+import events.EnvironmentType;
 
 public class EnvironmentalCondition {
     private EnvironmentType type;

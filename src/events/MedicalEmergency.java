@@ -2,11 +2,7 @@ package events;
 
 import agents.Agent;
 import agents.Human;
-import facilities.ResourceType;
 import colony.missions.MarsColony;
-
-import java.util.EnumMap;
-import java.util.Map;
 
 public class MedicalEmergency extends Emergency {
     private Human patient;
@@ -56,12 +52,12 @@ public class MedicalEmergency extends Emergency {
     }
 
     private boolean hasEnoughMedicalSupplies() {
-        return this.marsColony.getResourceManager().getTotal(ResourceType.MEDICAL_SUPPLIES) >= 1;
+        return this.marsColony.getTotalResource("MedicalSupplies") >= 1.0;
     }
 
     private void consumeMedicalSupplies() {
-        Map<ResourceType, Integer> req = new EnumMap<>(ResourceType.class);
-        req.put(ResourceType.MEDICAL_SUPPLIES, 1);
-        this.marsColony.getResourceManager().consume(req);
+        if (this.marsColony.getResourceManager() != null) {
+            this.marsColony.getResourceManager().canConsume("MedicalSupplies", 1.0);
+        }
     }
 }
