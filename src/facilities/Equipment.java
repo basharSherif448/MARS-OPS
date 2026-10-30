@@ -17,5 +17,14 @@ public class Equipment implements Repairable {
     @Override public void repair() { damaged = false; }
     public boolean isUsable() { return !damaged; }
     public boolean isOperational() { return isUsable(); }
+
+    public void setOperational(boolean operational) {
+        if (operational) {
+            repair();
+        } else {
+            damage();
+        }
+    }
+
     @Override public String toString() { return name + (damaged ? " [DAMAGED]" : ""); }
 }

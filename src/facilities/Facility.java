@@ -31,6 +31,16 @@ public abstract class Facility implements Location, Repairable {
     public ResourceStore getStore() { return store; }
     public int getStock(ResourceType type) { return store.get(type); }
 
+    public double getResourceQuantity(String name) {
+        if (name == null) return 0.0;
+        try {
+            ResourceType type = ResourceType.valueOf(name.toUpperCase());
+            return (double) getStock(type);
+        } catch (IllegalArgumentException e) {
+            return 0.0;
+        }
+    }
+
     public void addEquipment(Equipment e) { equipment.add(e); }
     public List<Equipment> getEquipment() { return Collections.unmodifiableList(equipment); }
     public boolean hasUsableEquipment(EquipmentType type) {

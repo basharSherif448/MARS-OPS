@@ -1,8 +1,9 @@
 package missions;
 
+import agents.*;
 import java.util.ArrayList;
 import java.util.List;
-
+import facilities.*;
 import agents.Agent;
 import agents.ExplorationRover;
 import facilities.Location;
