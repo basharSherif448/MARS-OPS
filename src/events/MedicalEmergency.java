@@ -2,7 +2,7 @@ package events;
 
 import agents.Agent;
 import agents.Human;
-import colony.missions.MarsColony;
+import missions.MarsColony;
 
 public class MedicalEmergency extends Emergency {
     private Human patient;
@@ -12,9 +12,7 @@ public class MedicalEmergency extends Emergency {
         this.patient = patient;
     }
 
-    public Human getPatient() {
-        return patient;
-    }
+    public Human getPatient() { return patient; }
 
     @Override
     public boolean respond() {
@@ -55,9 +53,10 @@ public class MedicalEmergency extends Emergency {
         return this.marsColony.getTotalResource("MedicalSupplies") >= 1.0;
     }
 
+    // FIX: was canConsume(...) -> now really consumes
     private void consumeMedicalSupplies() {
         if (this.marsColony.getResourceManager() != null) {
-            this.marsColony.getResourceManager().canConsume("MedicalSupplies", 1.0);
+            this.marsColony.getResourceManager().consume("MedicalSupplies", 1.0);
         }
     }
 }

@@ -2,11 +2,7 @@ package events;
 
 import agents.Agent;
 import facilities.Habitat;
-import facilities.ResourceType;
-import colony.missions.MarsColony;
-
-import java.util.EnumMap;
-import java.util.Map;
+import missions.MarsColony;
 
 public class OxygenLeakEmergency extends Emergency {
     private Habitat affectedHabitat;
@@ -70,15 +66,14 @@ public class OxygenLeakEmergency extends Emergency {
     }
 
     private boolean hasEnoughRepairResources() {
-        return this.marsColony.getResourceManager().getTotal(ResourceType.SPARE_PARTS) >= 2;
+        return this.marsColony.getTotalResource("SpareParts") >= 2.0;
     }
 
+    // FIX: was canConsume(...) (check only) -> now really consumes the spare parts
     private void consumeRepairResources() {
-        Map<ResourceType, Integer> req = new EnumMap<>(ResourceType.class);
-        req.put(ResourceType.SPARE_PARTS, 2);
-        this.marsColony.getResourceManager().consume(req);
+        if (this.marsColony.getResourceManager() != null) {
+            this.marsColony.getResourceManager().consume("SpareParts", 2.0);
+        }
     }
 }
-
-
 

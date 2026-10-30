@@ -1,10 +1,8 @@
-package colony.events;
+package events;
 
 import agents.Agent;
 import facilities.Facility;
-import colony.missions.MarsColony;
-import events.Emergency;
-import events.EmergencyStatus;
+import missions.MarsColony;
 
 public class FireEmergency extends Emergency {
     private Facility affectedFacility;
@@ -14,9 +12,7 @@ public class FireEmergency extends Emergency {
         this.affectedFacility = affectedFacility;
     }
 
-    public Facility getAffectedFacility() {
-        return affectedFacility;
-    }
+    public Facility getAffectedFacility() { return affectedFacility; }
 
     @Override
     public boolean respond() {
@@ -64,9 +60,10 @@ public class FireEmergency extends Emergency {
         return this.marsColony.getTotalResource("Water") >= 10.0;
     }
 
+    //
     private void consumeFireSupplies() {
         if (this.marsColony.getResourceManager() != null) {
-            this.marsColony.getResourceManager().canConsume("Water", 10.0);
+            this.marsColony.getResourceManager().consume("Water", 10.0);
         }
     }
 }

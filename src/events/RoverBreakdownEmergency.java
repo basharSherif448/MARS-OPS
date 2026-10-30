@@ -1,10 +1,8 @@
-package colony.events;
+package events;
 
 import agents.Agent;
-import colony.agents.ExplorationRover;
-import colony.missions.MarsColony;
-import events.Emergency;
-import events.EmergencyStatus;
+import agents.ExplorationRover;
+import missions.MarsColony;
 
 public class RoverBreakdownEmergency extends Emergency {
     private ExplorationRover rover;
@@ -14,9 +12,7 @@ public class RoverBreakdownEmergency extends Emergency {
         this.rover = rover;
     }
 
-    public ExplorationRover getRover() {
-        return rover;
-    }
+    public ExplorationRover getRover() { return rover; }
 
     @Override
     public boolean respond() {
@@ -58,9 +54,10 @@ public class RoverBreakdownEmergency extends Emergency {
         return this.marsColony.getTotalResource("SpareParts") >= 2.0;
     }
 
+    //
     private void consumeRepairParts() {
         if (this.marsColony.getResourceManager() != null) {
-            this.marsColony.getResourceManager().canConsume("SpareParts", 2.0);
+            this.marsColony.getResourceManager().consume("SpareParts", 2.0);
         }
     }
 }

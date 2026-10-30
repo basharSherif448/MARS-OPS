@@ -1,69 +1,51 @@
 package events;
 
-import agents.Agent;
-import colony.missions.MarsColony;
+import missions.MarsColony;
 
 import java.util.ArrayList;
-import java.util.List
+import java.util.List;
 
-public class EmergencyManager   {
+public class EmergencyManager {
     private List<Emergency> activeEmergencies;
-    private Marscolony marscolony;
+    private MarsColony marsColony;
 
-    EmergencyManager(MarsColony marsColony) {
-
+    public EmergencyManager(MarsColony marsColony) {
         this.activeEmergencies = new ArrayList<>();
         this.marsColony = marsColony;
     }
 
-    public List<Emergency> getActiveEmergencies() {
-        return activeEmergencies;
-    }
-
-    public void report(Emergency e ) {
-        if( e == null ) {
-            System.out.println("Emergency  is null" );
-
-        }
-        else if ( activeEmergencies.contains(e) )
-        {
-            System.out.println(" Emergency already active.");
-        }
-        else if ( e.getStatus() != EmergencyStatus.ACTIVE ){
-            System.out.println(" Emergency not active.");
-        }
-        else {
+    public void report(Emergency e) {
+        if (e == null) {
+            System.out.println("Emergency is null");
+        } else if (activeEmergencies.contains(e)) {
+            System.out.println("Emergency already active.");
+        } else if (e.getStatus() != EmergencyStatus.ACTIVE) {
+            System.out.println("Emergency not active.");
+        } else {
             activeEmergencies.add(e);
         }
     }
-    public void update(){
-        List<Emergency> EMERGENCYS =new ArrayList<>( activeEmergencies);// to avoid edit the main array
-        for (Emergency emergency : EMERGENCYS) {
-            if( emergency.getStatus() == EmergencyStatus.RESOLVED ) {
+    //
+    public void update() {
+        List<Emergency> copy = new ArrayList<>(activeEmergencies);
+        for (Emergency emergency : copy) {
+            if (emergency.getStatus() != EmergencyStatus.ACTIVE) {
                 activeEmergencies.remove(emergency);
             }
-            else if( emergency.getStatus() == EmergencyStatus.UNRESOLVED ) {
-                continue;
-            }
-            else if( emergency.getStatus() == EmergencyStatus.ACTIVE ) {
-                continue;
-            }
         }
-
-
-
     }
-    public boolean respond(Emergency e) {
 
+    //
+    public void update(int units) {
+        update();
+    }
+
+    public boolean respond(Emergency e) {
         if (e == null || !activeEmergencies.contains(e) || e.getStatus() != EmergencyStatus.ACTIVE) {
             return false;
         }
-
         return e.respond();
     }
 
-    }
-
-
-
+    public List<Emergency> getActiveEmergencies() { return activeEmergencies; }
 }

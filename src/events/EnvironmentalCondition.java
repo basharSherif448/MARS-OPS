@@ -1,7 +1,6 @@
-package colony.events;
+package events;
 
-import colony.missions.MarsColony;
-import events.EnvironmentType;
+import missions.MarsColony;
 
 public class EnvironmentalCondition {
     private EnvironmentType type;
@@ -16,21 +15,10 @@ public class EnvironmentalCondition {
         this.active = true;
     }
 
-    public EnvironmentType getType() {
-        return type;
-    }
-
-    public double getSeverity() {
-        return severity;
-    }
-
-    public int getDurationRemaining() {
-        return durationRemaining;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
+    public EnvironmentType getType() { return type; }
+    public double getSeverity() { return severity; }
+    public int getDurationRemaining() { return durationRemaining; }
+    public boolean isActive() { return active; }
 
     public void apply(MarsColony colony) {
         if (!active) return;

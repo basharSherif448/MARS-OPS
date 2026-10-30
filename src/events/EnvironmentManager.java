@@ -1,9 +1,8 @@
-package colony.events;
+package events;
 
-import colony.missions.Mission;
-import colony.missions.ExplorationMission;
-import events.EnvironmentType;
-import events.EnvironmentalCondition;
+import missions.Mission;
+import missions.ExplorationMission;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +20,15 @@ public class EnvironmentManager {
     }
 
     public void update() {
+        update(1);
+    }
+
+    // FIX: Simulation.advanceTime(units) calls update(units) - overload added so the
+    // storm really lasts "units" time units instead of 1.
+    public void update(int units) {
         List<EnvironmentalCondition> copy = new ArrayList<>(conditions);
         for (EnvironmentalCondition condition : copy) {
-            condition.update(1);
+            condition.update(units);
             if (!condition.isActive()) {
                 conditions.remove(condition);
             }
