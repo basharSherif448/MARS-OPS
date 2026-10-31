@@ -5,6 +5,7 @@ import java.util.List;
 import facilities.*;
 import missions.*;
 import events.*;
+
 public class ExplorationRover extends Robot {
     private List<Equipment> carriedEquipment;
 
@@ -33,7 +34,7 @@ public class ExplorationRover extends Robot {
     }
 
     public void explore() {
-        if (isAvailable()) {
+        if (getBatteryLevel() > 0.0) {
             drainBattery(20.0);
         }
     }

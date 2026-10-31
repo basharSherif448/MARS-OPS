@@ -1,97 +1,177 @@
+package missions;
+
 import agents.*;
 import facilities.*;
-import events.*;
-import missions.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) {
-
-        System.out.println("==================================================");
-        System.out.println(" MARS-OPS: Autonomous Mars Colony Simulation");
-        System.out.println("==================================================\n");
-
-        System.out.println(">>> SCENARIO 1: Successful Exploration Mission <<<");
+        Location l1 = new MartianSurface();
+        ExplorationRover rover = new ExplorationRover(l1, "OPERATIONAL", 100.0);
+       
+        System.out.println("Rover Battery: " + rover.getBatteryLevel());
+        List<Equipment> equipment = new ArrayList<>();
+        equipment.add(new Equipment("Surface Core Drill", EquipmentType.EXPLORATION_KIT));
         
-        MarsColony colony = new MarsColony("Alpha Colony");
-        EmergencyManager emergencyMgr = new EmergencyManager();
-        EnvironmentManager envMgr = new EnvironmentManager();
-        Simulation sim = new Simulation(colony, emergencyMgr, envMgr);
+        ExplorationMission m1 = new ExplorationMission("1234", 3, l1, equipment);
+        System.out.println("Required Equip: " + m1.getRequiredEquipment());
+        System.out.println("Initial Status: " + m1.getStatus());
+        
+        List<Agent> team1 = new ArrayList<>();
+        team1.add(rover);
+        m1.assignAgents(team1);
+        System.out.println("Rover can perform mission? " + rover.canPerform(m1));
+        System.out.println("Rover available before start: " + rover.isAvailable());
 
-        Location baseLoc = new Location(10, 20);
-        Scientist scientist = new Scientist("SCI-01", "Dr. Alice", baseLoc);
-        ExplorationRover rover = new ExplorationRover("ROV-01", baseLoc);
-        Equipment scanner = new Equipment("EQ-01", "Surface Scanner");
+        boolean started = m1.start();
+        System.out.println("3. start()      : Result = " + started + ", Status = " + m1.getStatus());
+        
+        m1.execute();
+        System.out.println("4. execute()    : Rover battery after explore = " + rover.getBatteryLevel() + "%");
+        
+        m1.updateProgress(2);
+        System.out.println("5. Progress +2  : Elapsed = " + m1.getElapsedUnits() + "/" + m1.getDuration() + 
+                           ", Status = " + m1.getStatus());
+        
+        m1.updateProgress(1);
+        System.out.println("6. Progress +1  : Elapsed = " + m1.getElapsedUnits() + "/" + m1.getDuration() + 
+                           ", Status = " + m1.getStatus());
+        
+        System.out.println("Final Status    : " + m1.getStatus());
+        System.out.println("7. Post-Complete: Rover available = " + rover.isAvailable());
 
-        colony.addAgent(scientist);
-        colony.addAgent(rover);
+        // -------------------------------------------------------------
+        // SCENARIO 2: Failed Mission Lifecycle (Ineligible Agent)
+        // -------------------------------------------------------------
+        System.out.println("\n--- Scenario 2: Failed Mission Lifecycle ---");
+        Scientist sci = new Scientist("Dr. Stone", "SCI-01", "HEALTHY", l1, new String[]{"GEOLOGY"});
+        System.out.println("Scientist Health: " + sci.getHealthStatus());
+        System.out.println("Scientist canPerform(m1)? " + sci.canPerform(m1));
+      
+        ExplorationMission mission2 = new ExplorationMission("MIS-002", 2, l1, equipment);
+        System.out.println("1. Instantiated : Status = " + mission2.getStatus());
+        
+        List<Agent> team2 = new ArrayList<>();
+        team2.add(sci);
+        mission2.assignAgents(team2);
+        System.out.println("2. Agents Bound : Scientist available = " + sci.isAvailable());
 
-        ExplorationMission expMission = new ExplorationMission("MIS-EXP-01", 3, baseLoc);
-        expMission.assignAgent(scientist);
-        expMission.assignAgent(rover);
+        boolean startedFail = mission2.start();
+        System.out.println("3. start()      : Result = " + startedFail + ", Status = " + mission2.getStatus());
+        System.out.println("4. Failure Info : Reason = \"" + mission2.getFailureReason() + "\"");
+        System.out.println("5. Post-Failure : Scientist available = " + sci.isAvailable());
 
-        System.out.println("[Before Execution]");
-        System.out.println(colony.getStatusReport());
+        // -------------------------------------------------------------
+        // SCENARIO 3: RepairMission (Facility + Tool Restoration)
+        // -------------------------------------------------------------
+        System.out.println("\n--- Scenario 3: RepairMission Lifecycle ---");
+        PowerStation powerStation = new PowerStation("Solar Array Alpha", 250);
+        powerStation.setOperational(false);
 
-        sim.start();
-        boolean s1Submitted = colony.submitMission(expMission);
-        System.out.println("Mission Submitted: " + s1Submitted);
+        Equipment weldingTorch = new Equipment("Arc Welder", EquipmentType.TOOLKIT);
+        weldingTorch.damage();
 
-        sim.advanceTime(3);
+        System.out.println("Initial Facility Status : Operational = " + powerStation.isOperational());
+        System.out.println("Initial Equipment Status: Usable = " + weldingTorch.isUsable());
 
-        System.out.println("\n[After Execution]");
-        System.out.println(colony.getStatusReport());
-        sim.stop();
+        Engineer eng = new Engineer("Bob", "ENG-007", "HEALTHY", powerStation, new String[]{"ELECTRICAL"});
+        RepairMission repairMission = new RepairMission(powerStation, weldingTorch, "REP-101", 2, powerStation);
 
-        System.out.println("\n>>> SCENARIO 2: Mission Rejection <<<");
+        List<Agent> repairTeam = new ArrayList<>();
+        repairTeam.add(eng);
+        repairMission.assignAgents(repairTeam);
 
-        Engineer engineer = new Engineer("ENG-01", "Bob", baseLoc);
-        colony.addAgent(engineer);
+        boolean repairStarted = repairMission.start();
+        System.out.println("1. start()      : Result = " + repairStarted + ", Status = " + repairMission.getStatus());
 
-        ResearchMission resMission = new ResearchMission("MIS-RES-01", 4, baseLoc);
-        resMission.assignAgent(engineer);
+        repairMission.execute();
+        System.out.println("2. execute()    : Facility Operational = " + powerStation.isOperational() + 
+                           ", Equipment Usable = " + weldingTorch.isUsable());
 
-        boolean s2Submitted = colony.submitMission(resMission);
-        if (!s2Submitted) {
-            System.out.println("Mission cannot be assigned.");
-            System.out.println("Reason: Agent does not possess the required capability.");
-        }
+        repairMission.updateProgress(2);
+        System.out.println("3. Progress +2  : Status = " + repairMission.getStatus());
+        System.out.println("4. Engineer available post-repair = " + eng.isAvailable());
 
-        System.out.println("\n>>> SCENARIO 3: Resource Shortage <<<");
+        // -------------------------------------------------------------
+        // SCENARIO 4: MarsColony Orchestration
+        // -------------------------------------------------------------
+        System.out.println("\n--- Scenario 4: MarsColony Orchestration ---");
+        MarsColony colony = new MarsColony("Ares Base Prime");
 
-        Facility habitat = new Facility("Habitat A", baseLoc);
+        Habitat habitat = new Habitat("Main Habitat Dome", 400);
+        habitat.getStore().add(ResourceType.OXYGEN, 100);
         colony.addFacility(habitat);
+        colony.addFacility(powerStation);
 
-        RepairMission repairMission = new RepairMission(habitat, scanner, "MIS-REP-01", 5, baseLoc);
-        repairMission.assignAgent(engineer);
+        RepairRobot bot = new RepairRobot(l1, "OPERATIONAL", 100.0);
+        colony.addAgent(bot);
+        colony.addAgent(eng);
 
-        boolean s3Submitted = colony.submitMission(repairMission);
-        if (!s3Submitted) {
-            System.out.println("Mission rejected.");
-            System.out.println("Reason: Insufficient resources available in the colony.");
-        }
+        RepairMission colonyMission = new RepairMission(powerStation, null, "COL-REP-01", 1, powerStation);
+        List<Agent> autoTeam = new ArrayList<>();
+        autoTeam.add(bot);
+        colonyMission.assignAgents(autoTeam);
 
-        System.out.println("\n>>> SCENARIO 4: Emergency Handling (Oxygen Leak) <<<");
+        boolean submitted = colony.submitMission(colonyMission);
+        System.out.println("Mission Submitted to Colony : " + submitted);
+        System.out.println("Active Colony Mission Matches: " + (colony.getActiveMission() == colonyMission));
+        System.out.println("Colony Status Report:\n" + colony.getStatusReport());
 
-        Emergency oxygenLeak = new Emergency("Oxygen Leak", habitat);
-        System.out.println("Emergency Detected: Oxygen Leak in " + habitat.getName());
+        // Scenario 5: Dead battery rover cannot start mission
+// -------------------------------------------------------------
+        // SCENARIO 5: Edge Case - Depleted Battery Rover
+        // -------------------------------------------------------------
+        System.out.println("\n--- Scenario 5: Depleted Battery Rover ---");
+        ExplorationRover deadRover = new ExplorationRover(l1, "OPERATIONAL", 0.0);
+        ExplorationMission deadMission = new ExplorationMission("MIS-DEAD", 2, l1, equipment);
+        List<Agent> deadTeam = new ArrayList<>();
+        deadTeam.add(deadRover);
+        deadMission.assignAgents(deadTeam);
 
-        boolean handled = colony.handleEmergency(oxygenLeak);
-        System.out.println("Emergency Resolved: " + handled);
+        boolean deadStarted = deadMission.start();
+        System.out.println("1. Dead rover canPerform: " + deadRover.canPerform(deadMission));
+        System.out.println("2. Dead rover start()   : Result = " + deadStarted + ", Status = " + deadMission.getStatus());
 
-        System.out.println("\n>>> SCENARIO 5: Environmental Effect (Dust Storm) <<<");
+        // -------------------------------------------------------------
+        // SCENARIO 6: Edge Case - Agent Concurrency / Double Booking
+        // -------------------------------------------------------------
+        System.out.println("\n--- Scenario 6: Double Booking Busy Agent ---");
+        ExplorationRover busyRover = new ExplorationRover(l1, "OPERATIONAL", 100.0);
+        ExplorationMission activeM = new ExplorationMission("MIS-ACTIVE", 5, l1, equipment);
+        ExplorationMission secondM = new ExplorationMission("MIS-SECOND", 5, l1, equipment);
 
-        boolean isDustStorm = true;
+        List<Agent> teamActive = new ArrayList<>();
+        teamActive.add(busyRover);
+        activeM.assignAgents(teamActive);
+        activeM.start();
 
-        ExplorationMission stormMission = new ExplorationMission("MIS-EXP-02", 3, baseLoc);
-        stormMission.assignAgent(rover);
+        List<Agent> teamSecond = new ArrayList<>();
+        teamSecond.add(busyRover);
+        secondM.assignAgents(teamSecond);
 
-        if (isDustStorm) {
-            System.out.println("Exploration Mission cannot start.");
-            System.out.println("Reason: Surface operations are not allowed during a dust storm.");
-        }
-        
-        System.out.println("\n==================================================");
-        System.out.println(" Simulation Scenarios Completed Successfully.");
-        System.out.println("==================================================");
+        boolean secondStarted = secondM.start();
+        System.out.println("1. Second mission start(): Result = " + secondStarted + ", Status = " + secondM.getStatus());
+        System.out.println("2. Rover still busy in first mission: " + !busyRover.isAvailable());
+
+        // -------------------------------------------------------------
+        // SCENARIO 7: Edge Case - Overshoot Elapsed Progress
+        // -------------------------------------------------------------
+        System.out.println("\n--- Scenario 7: Elapsed Progress Overshoot ---");
+        ExplorationRover overshootRover = new ExplorationRover(l1, "OPERATIONAL", 100.0);
+        ExplorationMission overshootM = new ExplorationMission("MIS-OVER", 2, l1, equipment);
+        List<Agent> overshootTeam = new ArrayList<>();
+        overshootTeam.add(overshootRover);
+        overshootM.assignAgents(overshootTeam);
+        overshootM.start();
+
+        overshootM.updateProgress(10); // Exceeds duration of 2
+        System.out.println("1. Overshoot Status: " + overshootM.getStatus());
+        System.out.println("2. Elapsed Units   : " + overshootM.getElapsedUnits() + "/" + overshootM.getDuration());
+        System.out.println("3. Rover released  : " + overshootRover.isAvailable());
+
+
+
     }
 }

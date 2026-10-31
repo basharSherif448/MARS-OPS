@@ -28,27 +28,32 @@ public abstract class Mission {
     public abstract boolean canStart();
 
     public boolean start() {
-        if (canStart()) {
-            this.status = MissionStatus.IN_PROGRESS;
-            this.elapsedUnits = 0;
-            return true;
-        } else {
-            fail("Conditions not met to start mission.");
-            return false;
+    if (canStart()) {
+        this.status = MissionStatus.IN_PROGRESS;
+        this.elapsedUnits = 0;
+        if (assignedAgents != null) {
+            for (Agent agent : assignedAgents) {
+                agent.setAvailable(false);
+            }
         }
+        return true;
+    } else {
+        // Just record failure status and reason; do NOT release agents here
+        this.status = MissionStatus.FAILED;
+        this.failureReason = "Conditions not met to start mission.";
+        return false;
     }
+}
 
     public void assignAgents(List<Agent> agents) {
-        this.assignedAgents = agents;
-        for (Agent agent : agents) {
-            agent.setAvailable(false);
-        }
-    }
+    this.assignedAgents = agents;
+}
 
-    public void updateProgress(int units) {
+   public void updateProgress(int units) {
         if (this.status == MissionStatus.IN_PROGRESS) {
             this.elapsedUnits += units;
             if (this.elapsedUnits >= this.duration) {
+                this.elapsedUnits = this.duration; // Manual clamping to total duration
                 complete();
             }
         }
@@ -61,13 +66,18 @@ public abstract class Mission {
         }
     }
 
-    public void fail(String reason) {
-        this.status = MissionStatus.FAILED;
-        this.failureReason = reason;
+   public void fail(String reason) {
+    boolean wasInProgress = (this.status == MissionStatus.IN_PROGRESS);
+    this.status = MissionStatus.FAILED;
+    this.failureReason = reason;
+    
+    // Only release agents if they were actually locked during IN_PROGRESS
+    if (wasInProgress && assignedAgents != null) {
         for (Agent agent : assignedAgents) {
             agent.setAvailable(true);
         }
     }
+}
 
     public String getId() {
         return id;
