@@ -34,7 +34,8 @@ public abstract class Facility implements Location, Repairable {
     public double getResourceQuantity(String name) {
         if (name == null) return 0.0;
         try {
-            ResourceType type = ResourceType.valueOf(name.toUpperCase());
+            ResourceType type = ResourceType.fromName(name);
+            if (type == null) return 0.0;
             return (double) getStock(type);
         } catch (IllegalArgumentException e) {
             return 0.0;
