@@ -32,6 +32,7 @@ public class ResourceManager {
     public boolean canSupply(Map<ResourceType, Integer> request) { return check(request).success(); }
 
     private Result check(Map<ResourceType, Integer> request) {
+        if (request == null) { return Result.fail("Invalid request: null");}
         StringBuilder missing = new StringBuilder();
         for (Map.Entry<ResourceType, Integer> e : request.entrySet()) {
             int available = getTotal(e.getKey());
@@ -87,7 +88,9 @@ public class ResourceManager {
     public boolean canConsume(String name, double amount) {
         try {
             ResourceType type = ResourceType.fromName(name); if (type == null) return 0.0;
-            return getTotal(type) >= (int) amount;
+            if (amount < 0) { return false; }
+            int convertedAmount = (int) Math.ceil(amount);
+            return getTotal(type) >= convertedAmount;
         } catch (IllegalArgumentException | NullPointerException e) {
             return false;
         }
@@ -107,7 +110,7 @@ public class ResourceManager {
                 }
                 if (type == null) return false;
                 Number val = (Number) requirements.get(key);
-                request.put(type, val.intValue());
+                request.put(type, (int) Math.ceil(val.doubleValue()));
             } catch (Exception e) {
                 return false;
             }
