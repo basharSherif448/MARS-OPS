@@ -3,6 +3,7 @@ package facilities;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 public class ResourceManager {
     private final List<Facility> facilities;   // aggregation: the colony's facilities (shared list)
@@ -49,6 +50,15 @@ public class ResourceManager {
         return Result.ok();
     }
 
+    public Result consume(String name, double amount) {
+        ResourceType type = ResourceType.fromName(name);
+        if (type == null) {
+            return Result.fail("Unknown resource: " + name);
+        }
+        int quantity = (int) Math.ceil(amount);
+        return consume(Collections.singletonMap(type, quantity));
+    }
+
     public int consumeUpTo(ResourceType type, int amount) {
         return drain(type, Math.min(amount, getTotal(type)));
     }
@@ -67,7 +77,7 @@ public class ResourceManager {
 
     public double total(String name) {
         try {
-            ResourceType type = ResourceType.valueOf(name.toUpperCase());
+            ResourceType type = ResourceType.fromName(name); if (type == null) return 0.0;
             return (double) getTotal(type);
         } catch (IllegalArgumentException | NullPointerException e) {
             return 0.0;
@@ -76,7 +86,7 @@ public class ResourceManager {
 
     public boolean canConsume(String name, double amount) {
         try {
-            ResourceType type = ResourceType.valueOf(name.toUpperCase());
+            ResourceType type = ResourceType.fromName(name); if (type == null) return 0.0;
             return getTotal(type) >= (int) amount;
         } catch (IllegalArgumentException | NullPointerException e) {
             return false;
@@ -93,8 +103,9 @@ public class ResourceManager {
                 if (key instanceof ResourceType) {
                     type = (ResourceType) key;
                 } else {
-                    type = ResourceType.valueOf(key.toString().toUpperCase());
+                    type = ResourceType.fromName(key.toString());
                 }
+                if (type == null) return false;
                 Number val = (Number) requirements.get(key);
                 request.put(type, val.intValue());
             } catch (Exception e) {
