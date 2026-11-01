@@ -12,4 +12,10 @@ public class Habitat extends Facility {
     public int getOxygen() { return getStock(ResourceType.OXYGEN); }
 
     public int loseOxygen(int amount) { return getStore().removeUpTo(ResourceType.OXYGEN, amount); }
+
+    public int reduceOxygen(double amount) {
+        int convertedAmount = (int) Math.ceil(amount);
+        int result = loseOxygen(convertedAmount);
+        return result;
+    }
 }
