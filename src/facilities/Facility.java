@@ -21,6 +21,7 @@ public abstract class Facility implements Location, Repairable {
     public boolean isOperational() { return status == FacilityStatus.OPERATIONAL; }
 
     public void setOperational(boolean operational) {
+        if (status == FacilityStatus.DESTROYED) { return; }
         if (operational) {
             this.status = FacilityStatus.OPERATIONAL;
         } else {
