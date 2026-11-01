@@ -87,7 +87,7 @@ public class ResourceManager {
 
     public boolean canConsume(String name, double amount) {
         try {
-            ResourceType type = ResourceType.fromName(name); if (type == null) return 0.0;
+            ResourceType type = ResourceType.fromName(name); if (type == null) return false;
             if (amount < 0) { return false; }
             int convertedAmount = (int) Math.ceil(amount);
             return getTotal(type) >= convertedAmount;
