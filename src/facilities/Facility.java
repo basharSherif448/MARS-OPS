@@ -54,7 +54,7 @@ public abstract class Facility implements Location, Repairable {
     public boolean isStorage() { return false; }
     public String details() { return ""; }
 
-    @Override public boolean isDamaged() { return status == FacilityStatus.UNAVAILABLE; }
+    @Override public boolean isDamaged() { return status != FacilityStatus.OPERATIONAL; }
     @Override public void repair() { if (status == FacilityStatus.UNAVAILABLE) status = FacilityStatus.OPERATIONAL; }
 
     @Override public String toString() { return name; }
