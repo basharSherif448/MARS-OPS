@@ -13,7 +13,7 @@ public class Drone extends Robot {
         if (!isAvailable()) {
             return false;
         }
-        return (mission instanceof ExplorationMission);
+        return (mission instanceof ExplorationMission) || (mission instanceof RescueMission);
     }
 
     @Override

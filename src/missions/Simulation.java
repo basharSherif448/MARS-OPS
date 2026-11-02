@@ -17,6 +17,15 @@ public class Simulation {
         this.emergencyManager = emergencyManager;
         this.environmentManager = environmentManager;
         this.isRunning = false;
+
+        if (this.colony != null) {
+            if (this.colony.getEmergencyManager() == null) {
+                this.colony.setEmergencyManager(emergencyManager);
+            }
+            if (this.colony.getEnvironmentManager() == null) {
+                this.colony.setEnvironmentManager(environmentManager);
+            }
+        }
     }
 
     public void start() {
@@ -37,8 +46,17 @@ public class Simulation {
         this.currentTime += units;
         if (colony != null) {
             Mission activeMission = colony.getActiveMission();
-            if (activeMission != null && activeMission.getStatus() == MissionStatus.IN_PROGRESS) {
-                activeMission.updateProgress(units);
+            if (activeMission != null) {
+                if (activeMission.getStatus() == MissionStatus.ASSIGNED) {
+                    colony.startActiveMission();
+                }
+                if (activeMission.getStatus() == MissionStatus.IN_PROGRESS) {
+                    if (environmentManager != null && environmentManager.blocks(activeMission)) {
+                        activeMission.fail("Environmental condition caused active mission to fail.");
+                    } else {
+                        activeMission.updateProgress(units);
+                    }
+                }
             }
         }
         if (emergencyManager != null) {

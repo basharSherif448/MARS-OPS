@@ -1,25 +1,18 @@
 package agents;
 
-import java.util.ArrayList;
-import java.util.List;
+import events.*;
 import facilities.*;
 import missions.*;
-import events.*;
 
 public class ExplorationRover extends Robot {
-    private List<Equipment> carriedEquipment;
 
     public ExplorationRover(Location currentLocation, String healthStatus, double batteryLevel) {
         super(currentLocation, healthStatus, batteryLevel);
-        this.carriedEquipment = new ArrayList<>();
     }
 
     @Override
     public boolean canPerform(Mission mission) {
-        if (!isAvailable()) {
-            return false;
-        }
-        return (mission instanceof ExplorationMission);
+        return (mission instanceof ExplorationMission) && this.isAvailable();
     }
 
     @Override
@@ -27,19 +20,21 @@ public class ExplorationRover extends Robot {
         return false;
     }
 
+    private java.util.List<Equipment> carriedEquipment = new java.util.ArrayList<>();
+
     public void loadEquipment(Equipment eq) {
         if (eq != null) {
             this.carriedEquipment.add(eq);
         }
     }
 
-    public void explore() {
-        if (getBatteryLevel() > 0.0) {
-            drainBattery(20.0);
-        }
+    public java.util.List<Equipment> getCarriedEquipment() {
+        return carriedEquipment;
     }
 
-    public List<Equipment> getCarriedEquipment() {
-        return carriedEquipment;
+    public void explore() {
+        if (isFunctional()) {
+            drainBattery(20.0);
+        }
     }
 }

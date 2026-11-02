@@ -56,6 +56,10 @@ public class OxygenLeakEmergency extends Emergency {
 
         consumeRepairResources();
 
+        if (affectedHabitat.getLifeSupport() != null) {
+            affectedHabitat.getLifeSupport().repair();
+        }
+
         this.resolve();
         return true;
     }

@@ -10,6 +10,10 @@ public class RoverBreakdownEmergency extends Emergency {
     public RoverBreakdownEmergency(String id, int severity, EmergencyStatus status, ExplorationRover rover, MarsColony marsColony) {
         super(id, severity, status, rover.getLocation(), marsColony);
         this.rover = rover;
+        if (this.rover != null) {
+            this.rover.setHealthStatus("DAMAGED");
+            this.rover.setAvailable(false);
+        }
     }
 
     public ExplorationRover getRover() { return rover; }
@@ -20,6 +24,7 @@ public class RoverBreakdownEmergency extends Emergency {
             return false;
         }
 
+        rover.setHealthStatus("DAMAGED");
         rover.setAvailable(false);
 
         Agent repairer = null;
@@ -45,6 +50,7 @@ public class RoverBreakdownEmergency extends Emergency {
 
         consumeRepairParts();
 
+        rover.setHealthStatus("OPERATIONAL");
         rover.setAvailable(true);
         this.resolve();
         return true;

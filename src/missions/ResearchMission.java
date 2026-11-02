@@ -41,6 +41,13 @@ public class ResearchMission extends Mission {
     public void execute() {
         if (getStatus() == MissionStatus.IN_PROGRESS) {
             System.out.println("Executing research experiment: " + experimentName);
+            if (getAssignedAgents() != null) {
+                for (Agent agent : getAssignedAgents()) {
+                    if (agent instanceof Scientist) {
+                        ((Scientist) agent).performResearch();
+                    }
+                }
+            }
         }
     }
 

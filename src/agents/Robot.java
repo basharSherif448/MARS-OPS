@@ -1,7 +1,9 @@
 package agents;
+
 import events.*;
 import facilities.*;
 import missions.*;
+
 public abstract class Robot implements Agent {
     private double batteryLevel;
     private String healthStatus;
@@ -34,12 +36,15 @@ public abstract class Robot implements Agent {
     @Override
     public abstract boolean canHandle(Emergency emergency);
 
-    @Override
-    public boolean isAvailable() {
-        return this.available 
-                && !"DAMAGED".equalsIgnoreCase(this.healthStatus) 
+    public boolean isFunctional() {
+        return !"DAMAGED".equalsIgnoreCase(this.healthStatus) 
                 && !"DESTROYED".equalsIgnoreCase(this.healthStatus) 
                 && this.batteryLevel > 0.0;
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return this.available && isFunctional();
     }
 
     @Override
@@ -52,6 +57,7 @@ public abstract class Robot implements Agent {
         this.currentLocation = location;
     }
 
+    @Override
     public void setAvailable(boolean available) {
         this.available = available;
     }

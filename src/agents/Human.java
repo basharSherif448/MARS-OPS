@@ -24,14 +24,14 @@ public abstract class Human implements Agent {
         }
 
         this.currentLocation = currentLocation;
-         if (skills != null) {
-        this.skills = skills;      
-    } else {
-        this.skills = new String[0]; 
+        if (skills != null) {
+            this.skills = skills;      
+        } else {
+            this.skills = new String[0]; 
+        }
         this.fatigueLevel = 0.0;
         this.available = true;
     }
-}
 
     @Override
     public abstract boolean canPerform(Mission mission);
@@ -40,10 +40,10 @@ public abstract class Human implements Agent {
     public abstract boolean canHandle(Emergency emergency);
 
    
-   @Override
-public boolean isAvailable() {
-    return "HEALTHY".equalsIgnoreCase(healthStatus) && fatigueLevel < 100.0;
-}
+    @Override
+    public boolean isAvailable() {
+        return this.available && "HEALTHY".equalsIgnoreCase(healthStatus) && fatigueLevel < 100.0;
+    }
 
     @Override
     public Location getLocation() {

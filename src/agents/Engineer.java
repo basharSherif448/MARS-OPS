@@ -1,41 +1,24 @@
 package agents;
-import missions.*;
-import facilities.*;
+
 import events.*;
+import facilities.*;
+import missions.*;
+
 public class Engineer extends Human {
 
-    public Engineer(String name, String identificationNumber, String healthStatus, 
-                    Location currentLocation, String[] skills) {
-        super(name, identificationNumber, healthStatus, currentLocation, skills);
+    public Engineer(String name, String id, String healthStatus, Location currentLocation, String[] specializations) {
+        super(name, id, healthStatus, currentLocation, specializations);
     }
 
     @Override
     public boolean canPerform(Mission mission) {
-        if (!isAvailable()) {
-            return false;
-        }
-        return (mission instanceof RepairMission);
+        return (mission instanceof RepairMission) && this.isAvailable();
     }
 
     @Override
     public boolean canHandle(Emergency emergency) {
-        if (!isAvailable()) {
-            return false;
-        }
-        return (emergency instanceof OxygenLeakEmergency) || (emergency instanceof FireEmergency);
-    }
-
-    public void repair(Facility facility) {
-        if (facility != null) {
-            facility.setOperational(true);
-            increaseFatigue(20.0);
-        }
-    }
-
-    public void repairEquipment(Equipment eq) {
-        if (eq != null) {
-            eq.repair();
-            increaseFatigue(10.0);
-        }
+        return emergency instanceof FireEmergency 
+            || emergency instanceof OxygenLeakEmergency 
+            || emergency instanceof RoverBreakdownEmergency;
     }
 }

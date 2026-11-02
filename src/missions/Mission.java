@@ -1,13 +1,12 @@
 package missions;
 
-import agents.*;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import facilities.*;
 import agents.Agent;
-import agents.ExplorationRover;
 import facilities.Location;
-import facilities.Equipment;
 
 public abstract class Mission {
 
@@ -18,6 +17,7 @@ public abstract class Mission {
     private List<Agent> assignedAgents = new ArrayList<>();
     private Location target;
     private String failureReason;
+    private Map<ResourceType, Integer> requiredResources = new EnumMap<>(ResourceType.class);
 
     public Mission(String id, int duration, Location target) {
         this.id = id;
@@ -26,30 +26,35 @@ public abstract class Mission {
     }
 
     public abstract boolean canStart();
+    public abstract void execute();
 
     public boolean start() {
-    if (canStart()) {
-        this.status = MissionStatus.IN_PROGRESS;
-        this.elapsedUnits = 0;
-        if (assignedAgents != null) {
-            for (Agent agent : assignedAgents) {
-                agent.setAvailable(false);
-            }
+        if (this.status == MissionStatus.FAILED) {
+            return false;
         }
-        return true;
-    } else {
-        // Just record failure status and reason; do NOT release agents here
-        this.status = MissionStatus.FAILED;
-        this.failureReason = "Conditions not met to start mission.";
-        return false;
+        if (canStart()) {
+            this.status = MissionStatus.IN_PROGRESS;
+            this.elapsedUnits = 0;
+            if (assignedAgents != null) {
+                for (Agent agent : assignedAgents) {
+                    agent.setAvailable(false);
+                }
+            }
+            return true;
+        } else {
+            this.status = MissionStatus.FAILED;
+            if (this.failureReason == null) {
+                this.failureReason = "Conditions not met to start mission.";
+            }
+            return false;
+        }
     }
-}
 
     public void assignAgents(List<Agent> agents) {
-    this.assignedAgents = agents;
-}
+        this.assignedAgents = agents;
+    }
 
-   public void updateProgress(int units) {
+    public void updateProgress(int units) {
         if (this.status == MissionStatus.IN_PROGRESS) {
             this.elapsedUnits += units;
             if (this.elapsedUnits >= this.duration) {
@@ -61,8 +66,10 @@ public abstract class Mission {
 
     public void complete() {
         this.status = MissionStatus.COMPLETED;
-        for (Agent agent : assignedAgents) {
-            agent.setAvailable(true);
+        if (assignedAgents != null) {
+            for (Agent agent : assignedAgents) {
+                agent.setAvailable(true);
+            }
         }
     }
 
@@ -107,4 +114,24 @@ public abstract class Mission {
         return failureReason;
     }
 
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
+
+    public Map<ResourceType, Integer> getRequiredResources() {
+        return requiredResources;
+    }
+
+    public void addRequiredResource(ResourceType type, int amount) {
+        if (type != null && amount > 0) {
+            this.requiredResources.merge(type, amount, Integer::sum);
+        }
+    }
+
+    public void addRequiredResource(String name, int amount) {
+        ResourceType type = ResourceType.fromName(name);
+        if (type != null) {
+            addRequiredResource(type, amount);
+        }
+    }
 }
