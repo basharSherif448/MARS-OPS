@@ -1,4 +1,4 @@
-package colony.facilities;
+package facilities;
 
 import java.util.EnumMap;
 import java.util.Map;

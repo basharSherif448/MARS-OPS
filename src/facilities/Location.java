@@ -1,4 +1,4 @@
-package colony.facilities;
+package facilities;
 
 public interface Location {
     String getName();

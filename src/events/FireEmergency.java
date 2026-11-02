@@ -19,9 +19,9 @@ public class FireEmergency extends Emergency {
         if (super.getStatus() != EmergencyStatus.ACTIVE || affectedFacility == null) {
             return false;
         }
-
+       // frist we seat the affected is not working so on all the equiments
         affectedFacility.setOperational(false);
-
+        // the number of responder is diffrenent in each we decide here tow responders
         Agent responder1 = null;
         Agent responder2 = null;
 
@@ -40,7 +40,7 @@ public class FireEmergency extends Emergency {
             this.markUnresolved("Insufficient responders for fire emergency");
             return false;
         }
-
+         // sending the responders to the affected facility
         responder1.setLocation(affectedFacility);
         responder2.setLocation(affectedFacility);
 

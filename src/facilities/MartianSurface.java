@@ -1,4 +1,4 @@
-package colony.facilities;
+package facilities;
 
 public class MartianSurface implements Location {
     @Override public String getName() { return "Martian Surface"; }

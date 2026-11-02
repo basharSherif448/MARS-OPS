@@ -1,4 +1,4 @@
-package colony.facilities;
+package facilities;
 
 public class Equipment implements Repairable {
     private final String name;

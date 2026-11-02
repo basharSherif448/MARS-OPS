@@ -1,4 +1,4 @@
-package colony.facilities;
+package facilities;
 
 
 public class Habitat extends Facility {

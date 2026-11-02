@@ -1,4 +1,6 @@
-package agents
+package agents;
+import facilities.Location;
+import events.Emergency;
 
 public interface Agent {
     boolean canPerform(Mission mission);

@@ -1,3 +1,3 @@
-package colony.facilities;
+package facilities;
 
 public enum FacilityStatus { OPERATIONAL, UNAVAILABLE, DESTROYED }

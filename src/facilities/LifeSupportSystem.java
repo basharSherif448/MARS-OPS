@@ -1,4 +1,4 @@
-package colony.facilities;
+package facilities;
 
 public class LifeSupportSystem implements Repairable {
     private boolean leaking;
